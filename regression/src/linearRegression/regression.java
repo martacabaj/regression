@@ -36,7 +36,7 @@ public class regression {
 
 	private static int NUM_OF_DIMENSIONS = 2;
 	private static int DEGREE_OF_MODEL = 1;
-	private static double threshold_val = 0.00000001;
+	private static double threshold_val = 0.0001;
 	private Double intervalBegin, intervalEnd;
 	private double alpha = 0.1;
 	private static int ITERATIONS = 1000;
@@ -96,8 +96,8 @@ public class regression {
 	// read data from file and init theta
 	public void init() throws IOException {
 		readFromFile();
-		theta[0] = 4;// intervalBegin + (intervalEnd - intervalBegin);
-		theta[1] = 3;// intervalBegin + (intervalEnd - intervalBegin);
+		theta[0] = 4;
+		theta[1] = 3;
 	}
 
 	/**
@@ -138,7 +138,8 @@ public class regression {
 		double h = 0;
 
 		for (int i = 0; i < theta.length; i++) {
-			h += theta[i] * coordinates[i];
+			
+			h += theta[i] * (i>1? coordinates[1]:coordinates[i]);
 		}
 		return h;
 	}
@@ -147,10 +148,10 @@ public class regression {
 		for (int i = 0; i < ITERATIONS; i++) {
 			error[i] = calculateCostFunction();
 			theta = updateTheta();
-			if ((error[i]) <= threshold_val) {
-				ITERATIONS = i;
-				break;
-			}
+//			if ((error[i]) <= threshold_val) {
+//				ITERATIONS = i;
+//				break;
+//			}
 		}
 	}
 
@@ -179,7 +180,7 @@ public class regression {
 
 			for (int j = 0; j < dataSet.size(); j++) {
 				sum += (getH(dataSet.get(j)) - dataSet.get(j)[NUM_OF_DIMENSIONS])
-						* dataSet.get(j)[i];
+						* (i>1?dataSet.get(j)[1]:dataSet.get(j)[i]);
 			}
 			tempTheta[i] = theta[i] - (alpha / dataSet.size()) * sum;
 		}
@@ -252,8 +253,8 @@ public class regression {
 		String params = "set datafile separator ';'; set key off;";
 		String output = "set term png;set output '" + BASE_FILE_PATH
 				+ REGRESSION_PNG + "';";
-		String plots = "plot '" + FILE_PATH + "' every::2; replot " + function
-				+ " linecolor rgb 'black';" + output + "replot";
+		String plots = "plot '" + FILE_PATH + "' every::2 linecolor rgb 'yellow'; replot " + function
+				+ " linecolor rgb 'black' lw 2;";// + output + "replot";
 		String command = params + plots;
 
 		executeGnuplot(command);
